@@ -10,14 +10,9 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
-        "test:broken1": "jest UserProfile.test1.broken",
-        "test:broken2": "jest UserProfile.test2.broken",
-        "test:broken3": "jest UserProfile.test3.broken",
-        "test:broken4": "jest UserProfile.test4.broken",
-        "test:broken5": "jest UserProfile.test5.broken",
-        "test:fixed": "jest UserProfile.tests.fixed",
-        "test:examples": "jest UserProfile.examples --verbose",
-        "test:debugging": "jest UserProfile.debugging --verbose"
+        "test:1": "jest UserProfile.test1.broken",
+        "test:2": "jest UserProfile.test2.broken",
+        "test:3": "jest UserProfile.test3.broken"
     },
     "keywords": [
         "react",

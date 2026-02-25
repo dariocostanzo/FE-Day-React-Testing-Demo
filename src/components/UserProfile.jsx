@@ -1,11 +1,21 @@
-
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [bgColor, setBgColor] = useState("#4338ca"); // default blue
+
+    // Sync App background and button backgrounds
+    React.useEffect(() => {
+        const appEl = document.querySelector(".App");
+        if (appEl) appEl.style.backgroundColor = bgColor;
+    }, [bgColor]);
+
+    const handleToggleBackground = () => {
+        setBgColor((prev) => (prev === "#4338ca" ? "#000000" : "#4338ca"));
+    };
 
     const fetchUser = async () => {
         setLoading(true);
@@ -14,54 +24,87 @@ const UserProfile = () => {
 
         try {
             const randomId = Math.floor(Math.random() * 1025) + 1;
-            const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
+            const response = await axios.get(
+                `https://pokeapi.co/api/v2/pokemon/${randomId}`,
+            );
             const data = response.data;
+            console.log(data)
             setUser({
                 name: data.name,
-                email: `${data.name}@pokeapi.co`,
-                age: data.base_experience,
+                weight: `${data.weight}g`,
+                height: `${data.height}cm`,
                 sprite: data.sprites?.front_default,
             });
         } catch (err) {
-            setError('Failed to fetch user data');
+            setError("Failed to fetch user data");
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <section className="user-profile-container" aria-labelledby="profile-title">
+        <section
+            className="user-profile-container"
+            aria-labelledby="profile-title"
+        >
             <h1 id="profile-title">Pokemon Profile</h1>
             <div className="fetch-pokemon-wrapper">
-                {loading ? (
-                    <div className="pokemon-spinner-container" role="status" aria-label="Loading pokemon">
+                <button
+                    className="fetch-pokemon-button duplicate-class-button"
+                    onClick={fetchUser}
+                    disabled={loading}
+                    aria-label={loading ? "Loading user data" : "Fetch pokemon data"}
+                    data-testid="fetch-button"
+                    style={{ backgroundColor: bgColor, color: "#fff" }}
+                >
+                    Fetch Pokemon
+                </button>
+                <button
+                    className="change-background-button duplicate-class-button"
+                    onClick={handleToggleBackground}
+                    disabled={!user}
+                    data-testid="toggle-bg-button"
+                    aria-label={bgColor === "#4338ca" ? "Set background to black" : "Set background to blue"}
+                    title={bgColor === "#4338ca" ? "Set background to black" : "Set background to blue"}
+                    style={{ backgroundColor: bgColor, color: "#fff" }}
+                >
+                    {bgColor === "#4338ca" ? "Set Background Black" : "Set Background Blue"}
+                </button>
+            </div>
+
+            <div aria-live="polite">
+                {error && (
+                    <div className="error-alert" role="alert">
+                        {error}
+                    </div>
+                )}
+            </div>
+            <div className="user-info-wrapper" data-testid="user-info">
+                {loading && (
+                    <div
+                        className="pokemon-spinner-container"
+                        role="status"
+                        aria-label="Loading pokemon"
+                    >
                         <img
                             src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif"
                             alt="Loading..."
                             className="pokemon-spinner"
                         />
                     </div>
-                ) : (
-                    <button
-                        className="fetch-pokemon-button"
-                        onClick={fetchUser}
-                        aria-label="Fetch pokemon data"
-                    >
-                        Fetch Pokemon
-                    </button>
                 )}
-            </div>
-            <div aria-live="polite">
-                {error && <div className="error-alert" role="alert">{error}</div>}
-            </div>
-            <div className="user-info-wrapper" data-testid="user-info">
                 {!user && !loading && !error && (
                     <div className="empty-state" role="status">
                         Click "Fetch Pokemon" to see profile details
                     </div>
                 )}
                 {user && (
-                    <div className="user-data-card" data-testid="user-data" role="region" aria-label="Loaded user profile info">
+                    <div
+                        className="user-data-card"
+                        data-testid="user-data"
+                        role="region"
+                        aria-label="Loaded user profile info"
+                    >
                         {user.sprite && (
                             <img
                                 src={user.sprite}
@@ -75,14 +118,12 @@ const UserProfile = () => {
                                 <dd className="field-value">{user.name}</dd>
                             </div>
                             <div className="user-field">
-                                <dt className="field-label">Email:</dt>
-                                <dd className="field-value">
-                                    <a href={`mailto:${user.email}`} className="email-link">{user.email}</a>
-                                </dd>
+                                <dt className="field-label">Height:</dt>
+                                <dd className="field-value">{user.height}</dd>
                             </div>
                             <div className="user-field">
-                                <dt className="field-label">Age:</dt>
-                                <dd className="field-value">{user.age}</dd>
+                                <dt className="field-label">Weight:</dt>
+                                <dd className="field-value">{user.weight}</dd>
                             </div>
                         </dl>
                     </div>

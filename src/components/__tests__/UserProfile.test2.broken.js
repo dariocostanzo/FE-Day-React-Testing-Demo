@@ -1,34 +1,31 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import UserProfile from '../UserProfile';
-import axios from 'axios';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import axios from "axios";
+import UserProfile from "../UserProfile";
 
-jest.mock('axios');
+jest.mock("axios");
 
-describe('UserProfile - Test 3 (BROKEN)', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    test('pikachu email should be displayed after fetch', async () => {
+describe("UserProfile - Test 2", () => {
+    it("should enable the 'Set Background' button after clicking the 'Fetch Pokemon' button", async () => {
         // Mock a successful API response
         axios.get.mockResolvedValue({
-            data: {
-                name: 'pikachu',
-                email: 'pikachu@pokemon.com',
-                age: 25,
-            },
+            data: { name: 'PokeJohnDoe', height: 123, weight: 30 }
         });
 
-        render(<UserProfile />);
+        const { container } = render(<UserProfile />);
 
-        const fetchButton = screen.getByRole('button', { name: /fetch pokemon/i });
+        const fetchButton = screen.getByRole("button", {
+            name: /fetch pokemon/i,
+        });
         fireEvent.click(fetchButton);
 
-        // Test completes before waitFor runs the assertion
-        waitFor(() => {
-            // This assertion should fail (wrong email), but test passes anyway
-            expect(screen.getByText(/email: wrongemail@test.com/i)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(
+                container.querySelector(".duplicate-class-button"),
+            ).toBeEnabled();
         });
+
+        // await waitFor(() => {
+        //     expect(screen.getByTestId("toggle-bg-button")).toBeEnabled();
+        // });
     });
 });
-
